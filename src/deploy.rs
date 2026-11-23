@@ -191,11 +191,17 @@ fn build_staging(
 
     fs::create_dir(staging)
         .map_err(|e| format!("Не удалось создать временную папку {}: {e}", staging.display()))?;
-    let output = OpenOptions::new()
+    let output = match OpenOptions::new()
         .write(true)
         .create_new(true)
         .open(pack_temp)
-        .map_err(|e| format!("Не удалось создать временный архив {}: {e}", pack_temp.display()))?;
+    {
+        Ok(file) => file,
+        Err(error) => {
+            remove_if_exists(staging);
+            return Err(format!("Не удалось создать временный архив {}: {error}", pack_temp.display()));
+        }
+    };
 
     let result = (|| -> Result<u64, String> {
         let mut writer = Writer::begin(BufWriter::with_capacity(4 << 20, output), root_mtime)
@@ -268,15 +274,21 @@ fn build_staging(
         Ok(items.len() as u64)
     })();
 
-    if let Err(error) = result {
+    let item_count = match result {
+        Ok(count) => count,
+        Err(error) => {
+            remove_if_exists(staging);
+            remove_if_exists(pack_temp);
+            return Err(error);
+        }
+    };
+
+    if let Err(error) = crate::hzpak::verify(pack_temp) {
         remove_if_exists(staging);
         remove_if_exists(pack_temp);
-        return Err(error);
+        return Err(format!("Проверка созданного HZPAK не пройдена: {error}"));
     }
-
-    crate::hzpak::verify(pack_temp)
-        .map_err(|e| format!("Проверка созданного HZPAK не пройдена: {e}"))?;
-    Ok(result.unwrap_or_default())
+    Ok(item_count)
 }
 
 pub fn deploy_to_sd(source: &Path, sd_root: &Path) -> Result<String, String> {
