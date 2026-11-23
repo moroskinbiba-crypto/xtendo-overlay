@@ -329,11 +329,11 @@ pub fn deploy_to_sd(source: &Path, sd_root: &Path) -> Result<String, String> {
     let backup_pack = backup_root.join("resources.hzpak");
 
     let resource_kind = path_kind(&resources)?;
-    if resource_kind.is_some_and(|kind| !kind.is_dir()) {
+    if resource_kind.as_ref().is_some_and(|kind| !kind.is_dir()) {
         return Err(format!("{} существует, но не является папкой.", resources.display()));
     }
     let pack_kind = path_kind(&pack)?;
-    if pack_kind.is_some_and(|kind| !kind.is_file()) {
+    if pack_kind.as_ref().is_some_and(|kind| !kind.is_file()) {
         return Err(format!("{} существует, но не является обычным файлом.", pack.display()));
     }
 
