@@ -114,7 +114,10 @@ fn top_level(root: &Path) -> Result<Vec<Top>, String> {
 
 fn set_modified(path: &Path, modified: Option<SystemTime>) {
     if let Some(time) = modified {
-        let _ = filetime::set_file_mtime(path, filetime::FileTime::from_system_time(time));
+        if let Ok(file) = File::options().write(true).open(path) {
+            let times = std::fs::FileTimes::new().set_modified(time);
+            let _ = file.set_times(times);
+        }
     }
 }
 
