@@ -66,7 +66,7 @@ pub fn validate_source(source: &Path) -> Result<ScanReport, String> {
         .filter_entry(|entry| !is_junk_name(&entry.file_name().to_string_lossy()))
     {
         let item = item.map_err(|e| format!("Ошибка чтения дерева ресурсов: {e}"))?;
-        if item.path() == root {
+        if item.path() == root.as_path() {
             continue;
         }
         let file_type = item.file_type();
