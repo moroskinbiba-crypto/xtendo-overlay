@@ -14,7 +14,6 @@ eframe = { version = "0.31.1", default-features = false, features = ["default_fo
 rfd = "0.15.3"
 serde_json = "1.0"
 walkdir = "2.5"
-filetime = "0.2"
 
 [profile.release]
 opt-level = 3
