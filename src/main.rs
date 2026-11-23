@@ -147,12 +147,14 @@ impl ToolkitApp {
             if ui
                 .add_enabled(enabled, egui::Button::new("Обзор…"))
                 .clicked()
-                && let Some(path) = rfd::FileDialog::new()
+            {
+                if let Some(path) = rfd::FileDialog::new()
                     .set_title(dialog_title)
                     .pick_folder()
-            {
-                *value = path.display().to_string();
-                changed = true;
+                {
+                    *value = path.display().to_string();
+                    changed = true;
+                }
             }
         });
         changed
@@ -185,6 +187,7 @@ impl eframe::App for ToolkitApp {
             );
             ui.add_space(14.0);
 
+            let path_inputs_enabled = !self.busy();
             egui::Frame::group(ui.style()).show(ui, |ui| {
                 ui.heading("1. Исходные ресурсы");
                 ui.add_space(5.0);
@@ -193,7 +196,7 @@ impl eframe::App for ToolkitApp {
                     "Папка с horizon-resources.json, assets/ и data/",
                     &mut self.source,
                     "Выбери корень подготовленных ресурсов",
-                    !self.busy(),
+                    path_inputs_enabled,
                 );
                 if changed {
                     self.scan = None;
@@ -222,7 +225,7 @@ impl eframe::App for ToolkitApp {
                     "Корень SD-карты (внутри должна быть папка switch/)",
                     &mut self.sd_root,
                     "Выбери корень SD-карты",
-                    !self.busy(),
+                    path_inputs_enabled,
                 );
                 ui.add_space(8.0);
                 ui.label(RichText::new("Сначала создаётся временная копия и проверяется HZPAK. Предыдущая папка resources/ и resources.hzpak сохраняются в switch/horizon-backups/.").weak());
