@@ -37,7 +37,7 @@ fn collect_items(root: &Path) -> Result<Vec<Item>, String> {
         .filter_entry(|entry| !is_junk_name(&entry.file_name().to_string_lossy()))
     {
         let entry = entry.map_err(|e| format!("Не удалось прочитать дерево ресурсов: {e}"))?;
-        if entry.path() == root {
+        if entry.path() == root.as_path() {
             continue;
         }
 
