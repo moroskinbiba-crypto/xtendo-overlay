@@ -1,0 +1,23 @@
+[package]
+name = "nx-resource-toolkit"
+version = "0.1.0"
+edition = "2021"
+description = "Windows-first resource validator, HZPAK builder and SD installer for Horizon NX"
+license = "LGPL-3.0-or-later"
+
+[[bin]]
+name = "nx-resource-toolkit"
+path = "src/main.rs"
+
+[dependencies]
+eframe = { version = "0.31.1", default-features = false, features = ["default_fonts", "glow"] }
+rfd = "0.15.3"
+serde_json = "1.0"
+walkdir = "2.5"
+filetime = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+strip = true
