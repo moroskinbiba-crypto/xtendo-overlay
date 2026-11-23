@@ -224,7 +224,7 @@ fn decode_and_check(index: &[u8], data_end: u64) -> io::Result<PackSummary> {
 }
 
 fn read_num(bytes: &[u8], cursor: &mut usize, count: usize) -> io::Result<u64> {
-    let end = cursor
+    let end = (*cursor)
         .checked_add(count)
         .ok_or_else(|| invalid("index cursor overflow"))?;
     let slice = bytes
@@ -238,7 +238,7 @@ fn read_num(bytes: &[u8], cursor: &mut usize, count: usize) -> io::Result<u64> {
 
 fn read_string(bytes: &[u8], cursor: &mut usize) -> io::Result<String> {
     let len = read_num(bytes, cursor, 2)? as usize;
-    let end = cursor
+    let end = (*cursor)
         .checked_add(len)
         .ok_or_else(|| invalid("index cursor overflow"))?;
     let slice = bytes
